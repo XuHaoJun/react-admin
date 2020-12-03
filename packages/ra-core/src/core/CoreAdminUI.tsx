@@ -58,7 +58,7 @@ const CoreAdminUI: FunctionComponent<AdminUIProps> = ({
 }) => {
     return (
         <>
-            {process.env.NODE_ENV === 'development' &&
+            {process.env.NODE_ENV === 'production' &&
             disableTelemetry !== true &&
             typeof window !== 'undefined' ? (
                 <img
