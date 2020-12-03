@@ -27,6 +27,7 @@ export interface AdminUIProps {
     children?: AdminChildren;
     customRoutes?: CustomRoutes;
     dashboard?: DashboardComponent;
+    disableTelemetry?: boolean;
     layout?: LayoutComponent;
     loading?: LoadingComponent;
     loginPage?: LoginComponent | boolean;
@@ -45,6 +46,7 @@ const CoreAdminUI: FunctionComponent<AdminUIProps> = ({
     children,
     customRoutes = [],
     dashboard,
+    disableTelemetry = false,
     layout = DefaultLayout,
     loading = Noop,
     loginPage = false,
@@ -55,41 +57,53 @@ const CoreAdminUI: FunctionComponent<AdminUIProps> = ({
     title = 'React Admin',
 }) => {
     return (
-        <Switch>
-            {loginPage !== false && loginPage !== true ? (
-                <Route
-                    exact
-                    path="/login"
-                    render={props =>
-                        createElement(loginPage, {
-                            ...props,
-                            title,
-                            theme,
-                        })
-                    }
+        <>
+            {process.env.NODE_ENV === 'development' &&
+            disableTelemetry !== true &&
+            typeof window !== 'undefined' ? (
+                <img
+                    src={`https://imfoxncoya.execute-api.eu-west-3.amazonaws.com/prod?domain=${window.location.hostname}`}
+                    width="0"
+                    height=""
+                    alt=""
                 />
             ) : null}
-            <Route
-                path="/"
-                render={props => (
-                    <CoreAdminRouter
-                        catchAll={catchAll}
-                        customRoutes={customRoutes}
-                        dashboard={dashboard}
-                        layout={layout}
-                        loading={loading}
-                        logout={logout && createElement(logout)}
-                        menu={menu}
-                        ready={ready}
-                        theme={theme}
-                        title={title}
-                        {...props}
-                    >
-                        {children}
-                    </CoreAdminRouter>
-                )}
-            />
-        </Switch>
+            <Switch>
+                {loginPage !== false && loginPage !== true ? (
+                    <Route
+                        exact
+                        path="/login"
+                        render={props =>
+                            createElement(loginPage, {
+                                ...props,
+                                title,
+                                theme,
+                            })
+                        }
+                    />
+                ) : null}
+                <Route
+                    path="/"
+                    render={props => (
+                        <CoreAdminRouter
+                            catchAll={catchAll}
+                            customRoutes={customRoutes}
+                            dashboard={dashboard}
+                            layout={layout}
+                            loading={loading}
+                            logout={logout && createElement(logout)}
+                            menu={menu}
+                            ready={ready}
+                            theme={theme}
+                            title={title}
+                            {...props}
+                        >
+                            {children}
+                        </CoreAdminRouter>
+                    )}
+                />
+            </Switch>
+        </>
     );
 };
 
